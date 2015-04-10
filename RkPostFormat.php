@@ -23,9 +23,8 @@
 		function addClassToTheme($post){
 
 		}
-
-		//actions and filters req
-		add_meta_box( $id, $title, $callback, $screen, $context, $priority, $callback_args );
-
 	}
+
+	//actions and filters req
+	add_meta_box( $id, $title, $callback, $screen, $context, $priority, $callback_args );
 ?>

@@ -18,6 +18,7 @@
 		"source": "https://github.com/bamtron5/rk-post-format"
 	},
 	"require": {
-		"php": ">=5.3.0"
+		"php": ">=5.3.0",
+		"composer/installers": "~1.0"
 	}
 }
