@@ -40,43 +40,56 @@
 		//TODO
 		//register settings page for adding classes
 
+	    private $_options;
+	    private $_plugin_options_name;
+	    private $_meta_key;
+	    private $_pf;
+
 		//init
 		public function __construct(){
-
+			$this->_plugin_options_name = 'pf_options';
+			$this->_options  = array(
+				"name" => "Standard"
+			);
+			$this->_meta_key = 'pf_meta';
 		}
 
-		//up
-		function activate(){
-
+		public function activate(){
+			//echo "activate";
+			$tmp = get_option( $this->_plugin_options_name );
+			if( !is_array( $tmp ) )
+			{
+				update_option( $this->_plugin_options_name, $this->_options );
+			}
 		}
 
-		//down
-		function deactivate(){
-
+		public function deactivate(){
+			echo "deactivate";
 		}
 
-		//settings page where new classes can be added or deleted
-		function printSettings(){
-
+		public function adminMenu(){
+			add_options_page(__('Post Format Options'),
+						 __( 'Post Format' ),
+						'activate_plugins',
+						'post-format-options',
+						array( &$this, 'adminOptions' )
+			);
+			add_action( 'admin_init', array( &$this, 'adminInit' ) );
 		}
 
-		//what options are available
-		function getOptions(){
-
+		public function adminInit(){
+			echo "adminInit initiated.";
 		}
 
-		//meta box add for post config
-		function printMetaBox($options){
-
+		public function adminOptions(){
+			echo "adminOptions initiated.";
 		}
 
-		//based of post
-		//add class to body on front-end markup
-		function addClassToTheme($post){
-
-		}
 	}
 
 	//actions and filters req
-	add_meta_box( $id, $title, $callback, $screen, $context, $priority, $callback_args );
+	add_action( 'admin_menu', array( new RkPostFormat(), 'adminMenu' ) );
+	register_activation_hook(__FILE__, array( new RkPostFormat(), 'activate' ) );
+	register_deactivation_hook(__FILE__, array( new RkPostFormat(), 'deactive'));
+	//add_meta_box( $id, $title, $callback, $screen, $context, $priority, $callback_args );
 ?>
