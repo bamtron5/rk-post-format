@@ -49,7 +49,7 @@
 		public function __construct(){
 			$this->_plugin_options_name = 'pf_options';
 			$this->_options  = array(
-				"name" => "Standard"
+				'names' = "Big Image, Small Image, Video"
 			);
 			$this->_meta_key = 'pf_meta';
 		}
@@ -64,7 +64,47 @@
 		}
 
 		public function deactivate(){
-			echo "deactivate";
+			echo "deactivated";
+			delete_option($this->_plugin_options_name);
+		}
+
+		
+
+		public function adminForm(){
+			?>
+			<div class="wrap">
+				<h2>Post Format Settings</h2>
+				<form method="post" action="options.php">
+					<?php settings_fields( 'pf_options_group' ); ?>
+					<?php do_settings_sections( 'pf_options_group' ); ?>
+					<?php submit_button(); ?>
+				</form>
+				<?php $this->printCurrentFormats(); ?>
+			</div>
+			<?php
+		}
+
+		//when admin
+		public function adminInit(){
+			register_setting( 
+				'pf_options_group',
+		  		'pf_options',
+		  		'pfSanitizeOptions'
+			);
+			
+			add_settings_section(
+				'pf_options_group',
+				'Post Format Settings',
+				array(&$this, 'pfSettingsSection'),
+				'pf_options_page'
+			);
+			
+			add_settings_field( 
+				'pf-name-input', 
+				'Name', 
+				array(&$this, 'adminFormatNameInput'), 
+				'pf_options_page'
+			);
 		}
 
 		public function adminMenu(){
@@ -72,24 +112,43 @@
 						 __( 'Post Format' ),
 						'activate_plugins',
 						'post-format-options',
-						array( &$this, 'adminOptions' )
+						array( &$this, 'adminForm' )
 			);
 			add_action( 'admin_init', array( &$this, 'adminInit' ) );
 		}
 
-		public function adminInit(){
-			echo "adminInit initiated.";
+		public function pfSettingsSection(){
+			echo "...";
 		}
 
-		public function adminOptions(){
-			echo "adminOptions initiated.";
+		public function pfSanitizeOptions($input){
+			return $input;
 		}
+
+		public function adminFormatNameInput(){
+			echo '
+				<label>Add Format <i>+</i></label>
+				<input type="text" name="pf_options[names][]" id="pf_options[names][]" value="' . get_option( $this->_plugin_options_name[names] ) . '"></input>
+			';
+		}
+
+		public function printCurrentFormats(){
+			$options =  get_option( $this->_plugin_options_name );
+			echo "<ul>";
+			for($x = 0; $x < count($options['names']); $x++){
+				echo "<li><b>" . $options['names'][$x] . "</b> | <a href='javascript:void(0);'><span style='color: #cc0000;'>Delete</span></li></a>";
+			}
+			echo "</ul>";
+			var_dump($options);
+		}
+
+		
 
 	}
 
 	//actions and filters req
 	add_action( 'admin_menu', array( new RkPostFormat(), 'adminMenu' ) );
 	register_activation_hook(__FILE__, array( new RkPostFormat(), 'activate' ) );
-	register_deactivation_hook(__FILE__, array( new RkPostFormat(), 'deactive'));
+	register_deactivation_hook(__FILE__, array( new RkPostFormat(), 'deactivate'));
 	//add_meta_box( $id, $title, $callback, $screen, $context, $priority, $callback_args );
 ?>
